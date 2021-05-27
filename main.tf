@@ -25,8 +25,8 @@ resource "google_compute_instance" "admin-workstation" {
   }
 
   service_account {
-    email  = data.google_compute_default_service_account.default.email
-    scopes = ["default"]
+    email  = var.vm_sa
+    scopes = ["cloud-platform"]
   }
 }
 
@@ -50,8 +50,8 @@ resource "google_compute_instance" "admin-cluster-master" {
     }
   }
   service_account {
-    email  = data.google_compute_default_service_account.default.email
-    scopes = ["default"]
+    email  = var.vm_sa
+    scopes = ["cloud-platform"]
   }
 }
 
@@ -75,8 +75,8 @@ resource "google_compute_instance" "admin-cluster-worker1" {
     }
   }
   service_account {
-    email  = data.google_compute_default_service_account.default.email
-    scopes = ["default"]
+    email  = var.vm_sa
+    scopes = ["cloud-platform"]
   }
 }
 
@@ -100,8 +100,8 @@ resource "google_compute_instance" "user-cluster-master" {
     }
   }
   service_account {
-    email  = data.google_compute_default_service_account.default.email
-    scopes = ["default"]
+    email  = var.vm_sa
+    scopes = ["cloud-platform"]
   }
 }
 
@@ -125,8 +125,8 @@ resource "google_compute_instance" "user-cluster-worker1" {
     }
   }
   service_account {
-    email  = data.google_compute_default_service_account.default.email
-    scopes = ["default"]
+    email  = var.vm_sa
+    scopes = ["cloud-platform"]
   }
 }
 
@@ -150,8 +150,8 @@ resource "google_compute_instance" "user-cluster-worker2" {
     }
   }
   service_account {
-    email  = data.google_compute_default_service_account.default.email
-    scopes = ["default"]
+    email  = var.vm_sa
+    scopes = ["cloud-platform"]
   }
 }
 
@@ -175,8 +175,8 @@ resource "google_compute_instance" "user-cluster-worker3" {
     }
   }
   service_account {
-    email  = data.google_compute_default_service_account.default.email
-    scopes = ["default"]
+    email  = var.vm_sa
+    scopes = ["cloud-platform"]
   }
 }
 
