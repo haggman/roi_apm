@@ -17,3 +17,8 @@ variable "base_image" {
     description = "Base os image to use for all created machines"
     default     = "ubuntu-2004-focal-v20210510" #Thats Ubuntu 20.04 LTS
 }
+
+variable "vm_sa" {
+    description = "Service account given to the VMs"
+    default     = ""
+}
