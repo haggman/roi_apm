@@ -23,6 +23,11 @@ resource "google_compute_instance" "admin-workstation" {
     access_config {
     }
   }
+
+  service_account {
+    email  = data.google_compute_default_service_account.default.email
+    scopes = ["default"]
+  }
 }
 
 # Build the admin master
@@ -43,6 +48,10 @@ resource "google_compute_instance" "admin-cluster-master" {
     network = "default"
     access_config {
     }
+  }
+  service_account {
+    email  = data.google_compute_default_service_account.default.email
+    scopes = ["default"]
   }
 }
 
@@ -65,6 +74,10 @@ resource "google_compute_instance" "admin-cluster-worker1" {
     access_config {
     }
   }
+  service_account {
+    email  = data.google_compute_default_service_account.default.email
+    scopes = ["default"]
+  }
 }
 
 # Build the user master
@@ -85,6 +98,10 @@ resource "google_compute_instance" "user-cluster-master" {
     network = "default"
     access_config {
     }
+  }
+  service_account {
+    email  = data.google_compute_default_service_account.default.email
+    scopes = ["default"]
   }
 }
 
@@ -107,6 +124,10 @@ resource "google_compute_instance" "user-cluster-worker1" {
     access_config {
     }
   }
+  service_account {
+    email  = data.google_compute_default_service_account.default.email
+    scopes = ["default"]
+  }
 }
 
 # Build the user worker2
@@ -128,6 +149,10 @@ resource "google_compute_instance" "user-cluster-worker2" {
     access_config {
     }
   }
+  service_account {
+    email  = data.google_compute_default_service_account.default.email
+    scopes = ["default"]
+  }
 }
 
 # Build the user worker3
@@ -148,6 +173,10 @@ resource "google_compute_instance" "user-cluster-worker3" {
     network = "default"
     access_config {
     }
+  }
+  service_account {
+    email  = data.google_compute_default_service_account.default.email
+    scopes = ["default"]
   }
 }
 
