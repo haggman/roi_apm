@@ -62,7 +62,7 @@ resource "google_compute_instance" "admin-cluster-worker1" {
 
   boot_disk {
     initialize_params {
-      image = image = var.base_image
+      image = var.base_image
       size  = 100
     }
   }
