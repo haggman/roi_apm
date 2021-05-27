@@ -11,7 +11,7 @@ resource "google_compute_instance" "admin-workstation" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-minimal-2004-focal-v20210511"
+      image = var.base_image
       size  = 100
     }
   }
@@ -32,7 +32,7 @@ resource "google_compute_instance" "admin-cluster-master" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-minimal-2004-focal-v20210511"
+      image = var.base_image
       size  = 100
     }
   }
@@ -53,7 +53,7 @@ resource "google_compute_instance" "admin-cluster-worker1" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-minimal-2004-focal-v20210511"
+      image = image = var.base_image
       size  = 100
     }
   }
@@ -74,7 +74,7 @@ resource "google_compute_instance" "user-cluster-master" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-minimal-2004-focal-v20210511"
+      image = var.base_image
       size  = 100
     }
   }
@@ -95,7 +95,7 @@ resource "google_compute_instance" "user-cluster-worker1" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-minimal-2004-focal-v20210511"
+      image = var.base_image
       size  = 100
     }
   }
@@ -116,7 +116,7 @@ resource "google_compute_instance" "user-cluster-worker2" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-minimal-2004-focal-v20210511"
+      image = var.base_image
       size  = 100
     }
   }
@@ -137,7 +137,7 @@ resource "google_compute_instance" "user-cluster-worker3" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-minimal-2004-focal-v20210511"
+      image = var.base_image
       size  = 100
     }
   }
