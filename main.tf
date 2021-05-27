@@ -1,7 +1,7 @@
 provider "google" {
-  project = "var.project_id"
-  region  = "var.gcp_region"
-  zone    = "var.gcp_zone"
+  project = var.project_id
+  region  = var.gcp_region
+  zone    = var.gcp_zone
 }
 
 # Build the admin workstation
