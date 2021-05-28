@@ -54,7 +54,8 @@ resource "google_compute_instance" "admin-cluster-master" {
     scopes = ["cloud-platform"]
   }
 }
-/*
+
+
 # Build the admin workers
 resource "google_compute_instance" "admin-cluster-workers" {
   count        = 1
@@ -131,4 +132,3 @@ resource "google_compute_instance" "user-cluster-workers" {
     scopes = ["cloud-platform"]
   }
 }
-*/
