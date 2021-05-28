@@ -47,15 +47,15 @@ resource "google_compute_instance" "admin-cluster-master" {
   }
 
   metadata_startup_script = file("startup.sh")
+    
+  metadata = {
+    ssh-keys = "root:${file(var.ssh_pub_key)}"
+  }
 
   network_interface {
     network = "default"
     access_config {
     }
-  }
-  
-  metadata = {
-    ssh-keys = "root:${file(var.ssh_pub_key)}"
   }
 
   service_account {
@@ -63,7 +63,6 @@ resource "google_compute_instance" "admin-cluster-master" {
     scopes = ["cloud-platform"]
   }
 }
-/*
 
 # Build the admin workers
 resource "google_compute_instance" "admin-cluster-workers" {
@@ -79,6 +78,10 @@ resource "google_compute_instance" "admin-cluster-workers" {
   }
 
   metadata_startup_script = file("startup.sh")
+    
+  metadata = {
+    ssh-keys = "root:${file(var.ssh_pub_key)}"
+  }
 
   network_interface {
     network = "default"
@@ -104,7 +107,11 @@ resource "google_compute_instance" "user-cluster-master" {
   }
 
   metadata_startup_script = file("startup.sh")
-
+  
+  metadata = {
+    ssh-keys = "root:${file(var.ssh_pub_key)}"
+  }
+  
   network_interface {
     network = "default"
     access_config {
@@ -130,6 +137,10 @@ resource "google_compute_instance" "user-cluster-workers" {
   }
 
   metadata_startup_script = file("startup.sh")
+  
+  metadata = {
+    ssh-keys = "root:${file(var.ssh_pub_key)}"
+  }
 
   network_interface {
     network = "default"
@@ -141,4 +152,3 @@ resource "google_compute_instance" "user-cluster-workers" {
     scopes = ["cloud-platform"]
   }
 } 
-*/
