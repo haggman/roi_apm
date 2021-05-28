@@ -22,3 +22,8 @@ variable "vm_sa" {
     description = "Service account given to the VMs"
     default     = ""
 }
+
+variable "ssh_pub_key" {
+    description	= "File path to the ssh public key to pass to all VMs"
+    default	= ""
+}

@@ -18,6 +18,10 @@ resource "google_compute_instance" "admin-workstation" {
 
   metadata_startup_script = file("startup.sh")
 
+  metadata = {
+    ssh-keys = "root:${file(var.ssh_pub_key)}"
+  }
+
   network_interface {
     network = "default"
     access_config {
@@ -49,12 +53,17 @@ resource "google_compute_instance" "admin-cluster-master" {
     access_config {
     }
   }
+  
+  metadata = {
+    ssh-keys = "root:${file(var.ssh_pub_key)}"
+  }
+
   service_account {
     email  = var.vm_sa
     scopes = ["cloud-platform"]
   }
 }
-
+/*
 
 # Build the admin workers
 resource "google_compute_instance" "admin-cluster-workers" {
@@ -131,4 +140,5 @@ resource "google_compute_instance" "user-cluster-workers" {
     email  = var.vm_sa
     scopes = ["cloud-platform"]
   }
-}
+} 
+*/
