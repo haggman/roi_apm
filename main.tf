@@ -12,7 +12,7 @@ resource "google_compute_instance" "admin-workstation" {
   boot_disk {
     initialize_params {
       image = var.base_image
-      size  = 100
+      size  = 200
     }
   }
 
@@ -54,10 +54,11 @@ resource "google_compute_instance" "admin-cluster-master" {
     scopes = ["cloud-platform"]
   }
 }
-
-# Build the admin worker1
-resource "google_compute_instance" "admin-cluster-worker1" {
-  name         = "admin-cluster-worker1"
+/*
+# Build the admin workers
+resource "google_compute_instance" "admin-cluster-workers" {
+  count        = 1
+  name         = "admin-cluster-worker${count.index}"
   machine_type = "e2-standard-4"
 
   boot_disk {
@@ -105,9 +106,10 @@ resource "google_compute_instance" "user-cluster-master" {
   }
 }
 
-# Build the user worker1
-resource "google_compute_instance" "user-cluster-worker1" {
-  name         = "user-cluster-worker1"
+# Build the user workers
+resource "google_compute_instance" "user-cluster-workers" {
+  count        = 3
+  name         = "user-cluster-worker${count.index}"
   machine_type = "e2-standard-4"
 
   boot_disk {
@@ -129,54 +131,4 @@ resource "google_compute_instance" "user-cluster-worker1" {
     scopes = ["cloud-platform"]
   }
 }
-
-# Build the user worker2
-resource "google_compute_instance" "user-cluster-worker2" {
-  name         = "user-cluster-worker2"
-  machine_type = "e2-standard-4"
-
-  boot_disk {
-    initialize_params {
-      image = var.base_image
-      size  = 100
-    }
-  }
-
-  metadata_startup_script = file("startup.sh")
-
-  network_interface {
-    network = "default"
-    access_config {
-    }
-  }
-  service_account {
-    email  = var.vm_sa
-    scopes = ["cloud-platform"]
-  }
-}
-
-# Build the user worker3
-resource "google_compute_instance" "user-cluster-worker3" {
-  name         = "user-cluster-worker3"
-  machine_type = "e2-standard-4"
-
-  boot_disk {
-    initialize_params {
-      image = var.base_image
-      size  = 100
-    }
-  }
-
-  metadata_startup_script = file("startup.sh")
-
-  network_interface {
-    network = "default"
-    access_config {
-    }
-  }
-  service_account {
-    email  = var.vm_sa
-    scopes = ["cloud-platform"]
-  }
-}
-
+*/
