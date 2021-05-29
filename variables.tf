@@ -27,3 +27,4 @@ variable "ssh_pub_key" {
     description	= "File path to the ssh public key to pass to all VMs"
     default	= ""
 }
+

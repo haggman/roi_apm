@@ -4,6 +4,31 @@ provider "google" {
   zone    = var.gcp_zone
 }
 
+# Add a new subnet with secondary IPs
+resource "google_compute_subnetwork" "apm-subnet" {
+  name          = "apm-subnet"
+  ip_cidr_range = "172.16.0.0/16"
+  region        = var.gcp_region
+  network       = "default"
+  secondary_ip_range = [{ 
+    range_name    = "admin-cluster-pods"
+    ip_cidr_range = "172.20.0.0/14"
+  },
+  { 
+    range_name    = "user-cluster-pods"
+    ip_cidr_range = "172.24.0.0/14"
+  },
+  { 
+    range_name    = "admin-cluster-services"
+    ip_cidr_range = "172.28.0.0/20"
+  },
+  { 
+    range_name    = "user-cluster-services"
+    ip_cidr_range = "172.28.16.0/20"
+  }]
+}
+
+
 # Build the admin workstation
 resource "google_compute_instance" "admin-workstation" {
   name         = "admin-workstation"
@@ -23,7 +48,8 @@ resource "google_compute_instance" "admin-workstation" {
   }
 
   network_interface {
-    network = "default"
+    network     = "default"
+    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
     access_config {
     }
   }
@@ -54,6 +80,7 @@ resource "google_compute_instance" "admin-cluster-master" {
 
   network_interface {
     network = "default"
+    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
     access_config {
     }
   }
@@ -66,7 +93,7 @@ resource "google_compute_instance" "admin-cluster-master" {
 
 # Build the admin workers
 resource "google_compute_instance" "admin-cluster-workers" {
-  count        = 1
+  count        = 2 
   name         = "admin-cluster-worker${count.index}"
   machine_type = "e2-standard-4"
 
@@ -85,6 +112,7 @@ resource "google_compute_instance" "admin-cluster-workers" {
 
   network_interface {
     network = "default"
+    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
     access_config {
     }
   }
@@ -114,6 +142,7 @@ resource "google_compute_instance" "user-cluster-master" {
   
   network_interface {
     network = "default"
+    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
     access_config {
     }
   }
@@ -144,6 +173,7 @@ resource "google_compute_instance" "user-cluster-workers" {
 
   network_interface {
     network = "default"
+    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
     access_config {
     }
   }
