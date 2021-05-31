@@ -4,40 +4,36 @@ provider "google" {
   zone    = var.gcp_zone
 }
 
-# Add a new subnet with secondary IPs
-resource "google_compute_subnetwork" "apm-subnet" {
-  name          = "apm-subnet"
-  ip_cidr_range = "172.16.0.0/16"
-  region        = var.gcp_region
-  network       = "default"
-  secondary_ip_range = [{ 
-    range_name    = "admin-cluster-pods"
-    ip_cidr_range = "172.20.0.0/14"
-  },
-  { 
-    range_name    = "user-cluster-pods"
-    ip_cidr_range = "172.24.0.0/14"
-  },
-  { 
-    range_name    = "admin-cluster-services"
-    ip_cidr_range = "172.28.0.0/20"
-  },
-  { 
-    range_name    = "user-cluster-services"
-    ip_cidr_range = "172.28.16.0/20"
-  }]
+# Create the vxlan firewall
+resource "google_compute_firewall" "allow-vxlan" {
+  name    = "allow-vxlan"
+  network = "default"
+
+  allow {
+    protocol = "udp"
+    ports    = ["4789", "8472"]
+  }
+  source_ranges = ["0.0.0.0/0"]
 }
 
+# Add a new subnet
+resource "google_compute_subnetwork" "apm-subnet" {
+  name          = "apm-subnet"
+  ip_cidr_range = "192.168.1.0/24"
+  region        = var.gcp_region
+  network       = "default"
+  
+}
 
 # Build the admin workstation
 resource "google_compute_instance" "admin-workstation" {
   name         = "admin-workstation"
-  machine_type = "e2-standard-4"
+  machine_type = "n1-highmem-8"
 
   boot_disk {
     initialize_params {
       image = var.base_image
-      size  = 200
+      size  = 256
     }
   }
 
@@ -63,12 +59,12 @@ resource "google_compute_instance" "admin-workstation" {
 # Build the admin master
 resource "google_compute_instance" "admin-cluster-master" {
   name         = "admin-cluster-master"
-  machine_type = "e2-standard-4"
+  machine_type = "n1-highmem-8"
 
   boot_disk {
     initialize_params {
       image = var.base_image
-      size  = 100
+      size  = 256
     }
   }
 
@@ -89,23 +85,24 @@ resource "google_compute_instance" "admin-cluster-master" {
     email  = var.vm_sa
     scopes = ["cloud-platform"]
   }
+
 }
 
-# Build the admin workers
+# Build the admin cluster workers
 resource "google_compute_instance" "admin-cluster-workers" {
-  count        = 2 
+  count        = 2
   name         = "admin-cluster-worker${count.index}"
-  machine_type = "e2-standard-4"
+  machine_type = "n1-highmem-8"
 
   boot_disk {
     initialize_params {
       image = var.base_image
-      size  = 100
+      size  = 256
     }
   }
 
   metadata_startup_script = file("startup.sh")
-    
+  
   metadata = {
     ssh-keys = "root:${file(var.ssh_pub_key)}"
   }
@@ -122,15 +119,16 @@ resource "google_compute_instance" "admin-cluster-workers" {
   }
 }
 
+/*
 # Build the user master
 resource "google_compute_instance" "user-cluster-master" {
   name         = "user-cluster-master"
-  machine_type = "e2-standard-4"
+  machine_type = "n1-highmem-8"
 
   boot_disk {
     initialize_params {
       image = var.base_image
-      size  = 100
+      size  = 256
     }
   }
 
@@ -156,12 +154,12 @@ resource "google_compute_instance" "user-cluster-master" {
 resource "google_compute_instance" "user-cluster-workers" {
   count        = 3
   name         = "user-cluster-worker${count.index}"
-  machine_type = "e2-standard-4"
+  machine_type = "n1-highmem-8"
 
   boot_disk {
     initialize_params {
       image = var.base_image
-      size  = 100
+      size  = 256
     }
   }
 
@@ -182,3 +180,4 @@ resource "google_compute_instance" "user-cluster-workers" {
     scopes = ["cloud-platform"]
   }
 } 
+*/
