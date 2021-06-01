@@ -19,165 +19,55 @@ resource "google_compute_firewall" "allow-vxlan" {
 # Add a new subnet
 resource "google_compute_subnetwork" "apm-subnet" {
   name          = "apm-subnet"
-  ip_cidr_range = "192.168.1.0/24"
+  ip_cidr_range = "172.16.0.0/24"
   region        = var.gcp_region
   network       = "default"
   
 }
 
-# Build the admin workstation
-resource "google_compute_instance" "admin-workstation" {
-  name         = "admin-workstation"
-  machine_type = "n1-highmem-8"
-
-  boot_disk {
-    initialize_params {
-      image = var.base_image
-      size  = 256
-    }
-  }
-
-  metadata_startup_script = file("startup.sh")
-
-  metadata = {
-    ssh-keys = "root:${file(var.ssh_pub_key)}"
-  }
-
-  network_interface {
-    network     = "default"
-    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
-    access_config {
-    }
-  }
-
-  service_account {
-    email  = var.vm_sa
-    scopes = ["cloud-platform"]
+locals {
+  vm_settings = {
+    "admin-workstation"     = { name = "admin-workstation"},
+    "admin-cluster-master"  = { name = "admin-cluster-master"},
+    "admin-cluster-worker0" = { name = "admin-cluster-worker0"},
+    "admin-cluster-worker1" = { name = "admin-cluster-worker1"}
   }
 }
 
-# Build the admin master
-resource "google_compute_instance" "admin-cluster-master" {
-  name         = "admin-cluster-master"
-  machine_type = "n1-highmem-8"
+# Build the VMs
+resource "google_compute_instance" "map" {
+    for_each     = local.vm_settings
+    name         = each.value.name
+    machine_type = "n1-highmem-8"
 
-  boot_disk {
-    initialize_params {
-      image = var.base_image
-      size  = 256
+    boot_disk {
+        initialize_params {
+        image = var.base_image
+        size  = 256
+        }
     }
-  }
 
-  metadata_startup_script = file("startup.sh")
-    
-  metadata = {
-    ssh-keys = "root:${file(var.ssh_pub_key)}"
-  }
+    metadata_startup_script = file("startup.sh")
 
-  network_interface {
-    network = "default"
-    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
-    access_config {
+    metadata = {
+        ssh-keys = "root:${file(var.ssh_pub_key)}"
     }
-  }
 
-  service_account {
-    email  = var.vm_sa
-    scopes = ["cloud-platform"]
-  }
+    network_interface {
+        network     = "default"
+        subnetwork  = google_compute_subnetwork.apm-subnet.self_link
+        access_config {
+        }
+    }
 
+    service_account {
+        email  = var.vm_sa
+        scopes = ["cloud-platform"]
+    }
+
+    shielded_instance_config {
+        enable_secure_boot            = false
+        enable_vtpm                   = false
+        enable_integrity_monitoring   = false
+    }
 }
-
-# Build the admin cluster workers
-resource "google_compute_instance" "admin-cluster-workers" {
-  count        = 2
-  name         = "admin-cluster-worker${count.index}"
-  machine_type = "n1-highmem-8"
-
-  boot_disk {
-    initialize_params {
-      image = var.base_image
-      size  = 256
-    }
-  }
-
-  metadata_startup_script = file("startup.sh")
-  
-  metadata = {
-    ssh-keys = "root:${file(var.ssh_pub_key)}"
-  }
-
-  network_interface {
-    network = "default"
-    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
-    access_config {
-    }
-  }
-  service_account {
-    email  = var.vm_sa
-    scopes = ["cloud-platform"]
-  }
-}
-
-/*
-# Build the user master
-resource "google_compute_instance" "user-cluster-master" {
-  name         = "user-cluster-master"
-  machine_type = "n1-highmem-8"
-
-  boot_disk {
-    initialize_params {
-      image = var.base_image
-      size  = 256
-    }
-  }
-
-  metadata_startup_script = file("startup.sh")
-  
-  metadata = {
-    ssh-keys = "root:${file(var.ssh_pub_key)}"
-  }
-  
-  network_interface {
-    network = "default"
-    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
-    access_config {
-    }
-  }
-  service_account {
-    email  = var.vm_sa
-    scopes = ["cloud-platform"]
-  }
-}
-
-# Build the user workers
-resource "google_compute_instance" "user-cluster-workers" {
-  count        = 3
-  name         = "user-cluster-worker${count.index}"
-  machine_type = "n1-highmem-8"
-
-  boot_disk {
-    initialize_params {
-      image = var.base_image
-      size  = 256
-    }
-  }
-
-  metadata_startup_script = file("startup.sh")
-  
-  metadata = {
-    ssh-keys = "root:${file(var.ssh_pub_key)}"
-  }
-
-  network_interface {
-    network = "default"
-    subnetwork  = google_compute_subnetwork.apm-subnet.self_link
-    access_config {
-    }
-  }
-  service_account {
-    email  = var.vm_sa
-    scopes = ["cloud-platform"]
-  }
-} 
-*/
