@@ -12,3 +12,4 @@ echo "Setting default region and zone"
 gcloud config set compute/zone $ZONE
 gcloud config set compute/region $REGION
 
+

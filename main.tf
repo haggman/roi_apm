@@ -27,10 +27,11 @@ resource "google_compute_subnetwork" "apm-subnet" {
 
 locals {
   vm_settings = {
-    "admin-workstation"     = { name = "admin-workstation"},
-    "admin-cluster-master"  = { name = "admin-cluster-master"},
-    "admin-cluster-worker0" = { name = "admin-cluster-worker0"},
-    "admin-cluster-worker1" = { name = "admin-cluster-worker1"}
+    "admin-workstation"     = { name = "admin-workstation", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image},
+    "admin-cluster-master"  = { name = "admin-cluster-master", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image},
+    "admin-cluster-worker0" = { name = "admin-cluster-worker0", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image},
+    "admin-cluster-worker1" = { name = "admin-cluster-worker1", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image}
+    "user-desktop"          = { name = "user-desktop",  machine_type="n1-standard-4", startup_script="setup_desktop.sh", image="debian-10-buster-v20210512"}
   }
 }
 
@@ -38,16 +39,16 @@ locals {
 resource "google_compute_instance" "map" {
     for_each     = local.vm_settings
     name         = each.value.name
-    machine_type = "n1-highmem-8"
+    machine_type = each.value.machine_type
 
     boot_disk {
         initialize_params {
-        image = var.base_image
+        image = each.value.image
         size  = 256
         }
     }
 
-    metadata_startup_script = file("startup.sh")
+    metadata_startup_script = file(each.value.startup_script)
 
     metadata = {
         ssh-keys = "root:${file(var.ssh_pub_key)}"
