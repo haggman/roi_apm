@@ -31,6 +31,8 @@ locals {
     "admin-cluster-master"  = { name = "admin-cluster-master", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image},
     "admin-cluster-worker0" = { name = "admin-cluster-worker0", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image},
     "admin-cluster-worker1" = { name = "admin-cluster-worker1", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image}
+    "user-cluster-master0" = { name = "user-cluster-master0", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image}
+    "user-cluster-worker0" = { name = "user-cluster-worker0", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image}
     "user-desktop"          = { name = "user-desktop",  machine_type="n1-standard-4", startup_script="setup_desktop.sh", image="debian-10-buster-v20210512"}
   }
 }
