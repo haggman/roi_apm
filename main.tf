@@ -28,11 +28,13 @@ resource "google_compute_subnetwork" "apm-subnet" {
 locals {
   vm_settings = {
     "admin-workstation"     = { name = "admin-workstation", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image},
+    "user-desktop"          = { name = "user-desktop",  machine_type="n1-standard-4", startup_script="setup_desktop.sh", image="debian-10-buster-v20210512"}
+  }
+  cluster_vm_settings = {
     "admin-cluster-master"  = { name = "admin-cluster-master", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image},
     "admin-cluster-worker0" = { name = "admin-cluster-worker0", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image},
     "user-cluster-master" = { name = "user-cluster-master", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image}
     "user-cluster-worker0" = { name = "user-cluster-worker0", machine_type="n1-highmem-8", startup_script="startup.sh", image=var.base_image}
-    "user-desktop"          = { name = "user-desktop",  machine_type="n1-standard-4", startup_script="setup_desktop.sh", image="debian-10-buster-v20210512"}
   }
 }
 
@@ -60,6 +62,42 @@ resource "google_compute_instance" "map" {
         subnetwork  = google_compute_subnetwork.apm-subnet.self_link
         access_config {
         }
+    }
+
+    service_account {
+        email  = var.vm_sa
+        scopes = ["cloud-platform"]
+    }
+
+    shielded_instance_config {
+        enable_secure_boot            = false
+        enable_vtpm                   = false
+        enable_integrity_monitoring   = false
+    }
+}
+
+# Build the Cluster VMs
+resource "google_compute_instance" "map_cluster_vms" {
+    for_each     = local.cluster_vm_settings
+    name         = each.value.name
+    machine_type = each.value.machine_type
+
+    boot_disk {
+        initialize_params {
+        image = each.value.image
+        size  = 256
+        }
+    }
+
+    metadata_startup_script = file(each.value.startup_script)
+
+    metadata = {
+        ssh-keys = "root:${file(var.ssh_pub_key)}"
+    }
+
+    network_interface {
+        network     = "default"
+        subnetwork  = google_compute_subnetwork.apm-subnet.self_link
     }
 
     service_account {
