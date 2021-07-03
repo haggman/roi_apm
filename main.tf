@@ -38,7 +38,7 @@ locals {
   }
 }
 
-# Build the VMs
+# Build the non-cluster VMs
 resource "google_compute_instance" "map" {
     for_each     = local.vm_settings
     name         = each.value.name
